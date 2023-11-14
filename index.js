@@ -28,9 +28,18 @@ async function run() {
         // Send a ping to confirm a successful connection
         const menuCollection = client.db("bistro-boss").collection("menu");
         const reviewsCollection = client.db("bistro-boss").collection("reviews");
-        app.get("/menu", async(req,res)=>{
+
+        // Service Related Api 
+        // Menu Api 
+        app.get("/menu", async (req, res) => {
             res.send(await menuCollection.find().toArray());
         });
+
+        // Reviews API 
+
+        app.get("/reviews", async (req, res) => {
+            res.send(await reviewsCollection.find().toArray());
+        })
 
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
