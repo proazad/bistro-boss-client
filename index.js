@@ -28,6 +28,7 @@ async function run() {
         // Send a ping to confirm a successful connection
         const menuCollection = client.db("bistro-boss").collection("menu");
         const reviewsCollection = client.db("bistro-boss").collection("reviews");
+        const cartsCollection = client.db("bistro-boss").collection("carts");
 
         // Service Related Api 
         // Menu Api 
@@ -39,6 +40,14 @@ async function run() {
 
         app.get("/reviews", async (req, res) => {
             res.send(await reviewsCollection.find().toArray());
+        })
+        // Shopping Carts Related API 
+        // Insert Data in Carts Table 
+
+        app.get("/carts", async (req, res) => {
+            const product = req.body;
+            const result = await cartsCollection.insertOne(product);
+            res.send(result);
         })
 
         await client.db("admin").command({ ping: 1 });
@@ -56,3 +65,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
     console.log("Boss is Running on Port ", port);
 })
+
