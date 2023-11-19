@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.h7gpv70.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -42,14 +42,26 @@ async function run() {
             res.send(await reviewsCollection.find().toArray());
         })
         // Shopping Carts Related API 
-        // Insert Data in Carts Table 
-
+        // Get Carts Data 
         app.get("/carts", async (req, res) => {
+            const email = req.query.email;
+            const query = { useremail: email }
+            const result = await cartsCollection.find(query).toArray();
+            res.send(result);
+        })
+        // Insert Data in Carts Table 
+        app.post("/carts", async (req, res) => {
             const product = req.body;
             const result = await cartsCollection.insertOne(product);
             res.send(result);
         })
-
+        // Delete Data From User Cart            
+        app.delete("/carts/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await cartsCollection.deleteOne(query);
+            res.send(result);
+        })
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
