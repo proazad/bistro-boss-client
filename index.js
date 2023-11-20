@@ -48,7 +48,25 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
-
+        // Update User / Make Admin 
+        app.patch("/users/admin/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const UpdateDoc = {
+                $set: {
+                    role: "admin"
+                }
+            }
+            const result = await usersCollection.updateOne(filter, UpdateDoc);
+            res.send(result)
+        })
+        // Delete User 
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            const user = { _id: new ObjectId(id) }
+            const result = await usersCollection.deleteOne(user);
+            res.send(result);
+        })
 
 
         // Service Related Api 
