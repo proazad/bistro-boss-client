@@ -30,9 +30,21 @@ async function run() {
         const usersCollection = client.db("bistro-boss").collection("users");
         const reviewsCollection = client.db("bistro-boss").collection("reviews");
         const cartsCollection = client.db("bistro-boss").collection("carts");
+
         // User Related application 
+        // Get all User 
+        app.get("/users", async (req, res) => {
+            const result = await usersCollection.find().toArray();
+            res.send(result);
+        })
+        // Create New User 
         app.post("/users", async (req, res) => {
             const user = req.body;
+            const query = { email: user.email }
+            const existinguser = await usersCollection.findOne(query);
+            if (existinguser) {
+                return res.send({ message: "user already Exist", insertedId: null })
+            }
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
