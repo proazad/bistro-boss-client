@@ -27,8 +27,17 @@ async function run() {
         await client.connect();
         // Send a ping to confirm a successful connection
         const menuCollection = client.db("bistro-boss").collection("menu");
+        const usersCollection = client.db("bistro-boss").collection("users");
         const reviewsCollection = client.db("bistro-boss").collection("reviews");
         const cartsCollection = client.db("bistro-boss").collection("carts");
+        // User Related application 
+        app.post("/users", async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
+
+
 
         // Service Related Api 
         // Menu Api 
