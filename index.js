@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,9 +32,32 @@ async function run() {
         const reviewsCollection = client.db("bistro-boss").collection("reviews");
         const cartsCollection = client.db("bistro-boss").collection("carts");
 
+        // JWT Related API 
+        app.post("/jwt", async (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+            res.send({ token });
+        })
+
+        // Middleware 
+        const verifyToken = async (req, res, next) => {
+            console.log("Token from Verify ", req.headers.authorization);
+            if (!req.headers.authorization) {
+                return res.status(401).send({ message: "Unauthorized Access" });
+            }
+            const token = req.headers.authorization.split(" ")[1];
+            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+                if (err) {
+                    return res.status(401).send({ message: "Unauthorized Access" });
+                }
+                req.decoded = jwt.decode;
+                next();
+            })
+
+        }
         // User Related application 
         // Get all User 
-        app.get("/users", async (req, res) => {
+        app.get("/users", verifyToken, async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result);
         })
