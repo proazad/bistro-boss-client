@@ -132,7 +132,13 @@ async function run() {
             const result = await menuCollection.insertOne(menu);
             res.send(result)
         })
-
+        // Delete Menu Item 
+        app.delete("/menu/:id", verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const res = await menuCollection.deleteOne(filter);
+            res.send(res);
+        })
         // Reviews API 
 
         app.get("/reviews", async (req, res) => {
