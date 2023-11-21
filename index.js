@@ -126,6 +126,12 @@ async function run() {
         app.get("/menu", async (req, res) => {
             res.send(await menuCollection.find().toArray());
         });
+        // Add New Food Item 
+        app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
+            const menu = req.body;
+            const result = await menuCollection.insertOne(menu);
+            res.send(result)
+        })
 
         // Reviews API 
 
