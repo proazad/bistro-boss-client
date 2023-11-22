@@ -122,22 +122,48 @@ async function run() {
 
 
         // Service Related Api 
-        // Menu Api 
+        //get All Menu Api 
         app.get("/menu", async (req, res) => {
             res.send(await menuCollection.find().toArray());
         });
+        // get Single Menu Api 
+
         // Add New Food Item 
         app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
             const menu = req.body;
             const result = await menuCollection.insertOne(menu);
             res.send(result)
-        })
+        });
+        // Get Single Menu Item 
+        app.get('/menu/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await menuCollection.findOne(query);
+            res.send(result);
+        });
+        // Update Menu Item 
+        app.patch('/menu/:id', async (req, res) => {
+            const id = req.params.id;
+            const item = req.body;
+            const query = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    name: item.name,
+                    category: item.category,
+                    price: item.price,
+                    recipe: item.recipe,
+                    image: item.image
+                }
+            }
+            const result = await menuCollection.updateOne(query, updatedDoc);
+            res.send(result);
+        });
         // Delete Menu Item 
         app.delete("/menu/:id", verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) }
-            const res = await menuCollection.deleteOne(filter);
-            res.send(res);
+            const result = await menuCollection.deleteOne(filter);
+            res.send(result);
         })
         // Reviews API 
 
